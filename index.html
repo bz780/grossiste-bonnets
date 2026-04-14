@@ -30,9 +30,9 @@
     "@type": "OfferCatalog",
     "name": "Catalogue Bonnets Grossiste",
     "itemListElement": [
-      {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Bonnets laine mérinos", "description": "Bonnets 100% laine mérinos, chauds et confortables, stock France", "offers": {"@type": "Offer", "price": "4.20", "priceCurrency": "EUR", "priceValidUntil": "2027-12-31", "availability": "https://schema.org/InStock", "url": "https://grossiste-bonnets.fr/#gammes"}}},
-      {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Bonnets polaire doublés", "description": "Bonnets polaire doublés, doux et isolants, idéal grand froid", "offers": {"@type": "Offer", "price": "3.80", "priceCurrency": "EUR", "priceValidUntil": "2027-12-31", "availability": "https://schema.org/InStock", "url": "https://grossiste-bonnets.fr/#gammes"}}},
-      {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Bonnets personnalisés logo brodé", "description": "Bonnets personnalisables avec broderie logo, à partir de 48 pièces", "offers": {"@type": "Offer", "price": "5.50", "priceCurrency": "EUR", "priceValidUntil": "2027-12-31", "availability": "https://schema.org/InStock", "url": "https://grossiste-bonnets.fr/#gammes"}}}
+      {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Bonnets laine mérinos", "description": "Bonnets 100% laine mérinos, chauds et confortables, stock France", "image": "https://grossiste-bonnets.fr/images/hero.jpg", "offers": {"@type": "Offer", "price": "4.20", "priceCurrency": "EUR", "priceValidUntil": "2027-12-31", "availability": "https://schema.org/InStock", "url": "https://grossiste-bonnets.fr/#gammes"}}},
+      {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Bonnets polaire doublés", "description": "Bonnets polaire doublés, doux et isolants, idéal grand froid", "image": "https://grossiste-bonnets.fr/images/hero.jpg", "offers": {"@type": "Offer", "price": "3.80", "priceCurrency": "EUR", "priceValidUntil": "2027-12-31", "availability": "https://schema.org/InStock", "url": "https://grossiste-bonnets.fr/#gammes"}}},
+      {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Bonnets personnalisés logo brodé", "description": "Bonnets personnalisables avec broderie logo, à partir de 48 pièces", "image": "https://grossiste-bonnets.fr/images/hero.jpg", "offers": {"@type": "Offer", "price": "5.50", "priceCurrency": "EUR", "priceValidUntil": "2027-12-31", "availability": "https://schema.org/InStock", "url": "https://grossiste-bonnets.fr/#gammes"}}}
     ]
   }
 }
@@ -435,7 +435,7 @@ footer a:hover{color:var(--moutarde)}
         <span style="color:#888;font-size:.82rem;">Lun–Ven 9h–18h</span>
       </div>
     </div>
-    <form action="mailto:adv@grossiste-bonnets.fr" method="post" enctype="text/plain">
+    <form action="#contact" method="post" enctype="text/plain">
       <div class="form-row">
         <input type="text" name="prenom" placeholder="Prénom" required>
         <input type="text" name="nom" placeholder="Nom" required>
@@ -446,6 +446,12 @@ footer a:hover{color:var(--moutarde)}
       <p class="form-note">Données utilisées uniquement pour le traitement de votre demande commerciale.</p>
       <button type="submit" class="btn-submit">Envoyer la demande</button>
     </form>
+      <div id="form-success" style="display:none;padding:18px 20px;background:#f0fdf4;border:1px solid #86efac;border-radius:8px;color:#166534;margin-top:16px;font-weight:500;font-size:.95rem;">
+        ✓ Votre demande a bien été envoyée. Nous vous répondrons sous 24h ouvrées.
+      </div>
+      <div id="form-error" style="display:none;padding:18px 20px;background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;color:#991b1b;margin-top:16px;font-size:.95rem;">
+        ✗ Une erreur est survenue. Veuillez réessayer ou nous contacter directement par email.
+      </div>
   </div>
 </section>
 </main>
@@ -466,5 +472,53 @@ document.querySelectorAll('.faq-q').forEach(btn=>{
 });
 </script>
 <!--/email_off-->
+
+<script>
+/* Formsubmit AJAX handler — auto-generated */
+(function () {
+  const form = document.querySelector('.contact-form');
+  if (!form) return;
+
+  // Bloquer la soumission native (honeypot + AJAX)
+  form.setAttribute('novalidate', '');
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    // Validation HTML5 manuelle
+    if (!form.checkValidity()) { form.reportValidity(); return; }
+
+    const btn = form.querySelector('[type="submit"]');
+    const origText = btn.textContent;
+    btn.textContent = 'Envoi en cours…';
+    btn.disabled = true;
+
+    const successEl = document.getElementById('form-success');
+    const errorEl   = document.getElementById('form-error');
+    if (errorEl) errorEl.style.display = 'none';
+
+    try {
+      const data = new FormData(form);
+      const res = await fetch('https://formsubmit.co/ajax/contact@le-reve-de-noel.com', {
+        method: 'POST',
+        headers: { Accept: 'application/json' },
+        body: data,
+      });
+      const json = await res.json();
+      if (json.success === 'true' || json.success === true) {
+        form.reset();
+        form.style.display = 'none';
+        if (successEl) successEl.style.display = 'block';
+      } else {
+        throw new Error('Formsubmit non-success');
+      }
+    } catch (err) {
+      btn.textContent = origText;
+      btn.disabled = false;
+      if (errorEl) errorEl.style.display = 'block';
+    }
+  });
+})();
+</script>
 </body>
 </html>
