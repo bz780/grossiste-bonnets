@@ -134,6 +134,37 @@ h3{font-family:var(--font);font-weight:400;color:var(--navy)}
 .gammes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:36px}
 .gamme-card{background:var(--neige);border-radius:var(--radius);border:1px solid #eee;overflow:hidden;display:flex;flex-direction:column;transition:box-shadow .25s,border-color .25s}
 .gamme-card:hover{box-shadow:0 6px 24px rgba(0,0,0,.08);border-color:var(--moutarde)}
+.gamme-card.is-hidden{display:none}
+
+.filter-bar{background:#fff;border:1px solid #eee;border-radius:var(--radius);padding:18px 20px;margin-top:24px;display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end}
+.filter-bar .filter-group{display:flex;flex-direction:column;gap:5px;min-width:180px;flex:1}
+.filter-bar label{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--navy);font-weight:600}
+.filter-bar select{padding:8px 10px;border:1px solid #ddd;border-radius:6px;background:#fff;font-size:.86rem;color:var(--navy);font-family:inherit;cursor:pointer}
+.filter-bar select:focus{outline:none;border-color:var(--moutarde)}
+.filter-bar select option:disabled{color:#bbb}
+.filter-bar .filter-actions{display:flex;align-items:center;gap:14px;margin-left:auto}
+.filter-bar .filter-count{font-size:.82rem;color:#666}
+.filter-bar .filter-count b{color:var(--navy)}
+.filter-bar .filter-reset{background:transparent;border:1px solid #ddd;color:var(--navy);padding:8px 14px;border-radius:6px;cursor:pointer;font-size:.82rem;font-family:inherit;transition:all .2s}
+.filter-bar .filter-reset:hover{border-color:var(--moutarde);color:var(--moutarde)}
+.filter-empty{display:none;background:var(--moutarde-light);border:1px dashed var(--moutarde);padding:22px;border-radius:var(--radius);margin-top:18px;text-align:center;font-size:.9rem;color:var(--navy)}
+.filter-empty a{color:var(--moutarde);font-weight:600;text-decoration:underline;cursor:pointer}
+.filter-mobile{display:none}
+@media(max-width:760px){
+  .filter-bar{display:none}
+  .filter-mobile{display:block;margin-top:24px}
+  .filter-mobile summary{cursor:pointer;background:#fff;border:1px solid #eee;border-radius:var(--radius);padding:14px 18px;font-size:.88rem;color:var(--navy);font-weight:600;list-style:none}
+  .filter-mobile summary::-webkit-details-marker{display:none}
+  .filter-mobile summary::after{content:"▼";float:right;font-size:.7rem;color:var(--moutarde)}
+  .filter-mobile[open] summary::after{content:"▲"}
+  .filter-mobile .filter-bar-inner{display:flex;flex-direction:column;gap:14px;padding:18px;background:#fff;border:1px solid #eee;border-top:none;border-radius:0 0 var(--radius) var(--radius)}
+  .filter-mobile .filter-group{display:flex;flex-direction:column;gap:5px}
+  .filter-mobile label{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--navy);font-weight:600}
+  .filter-mobile select{padding:10px;border:1px solid #ddd;border-radius:6px;background:#fff;font-size:.9rem;color:var(--navy);font-family:inherit}
+  .filter-mobile .filter-actions{display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid #eee}
+  .filter-mobile .filter-count{font-size:.82rem;color:#666}
+  .filter-mobile .filter-reset{background:transparent;border:1px solid #ddd;color:var(--navy);padding:8px 14px;border-radius:6px;cursor:pointer;font-size:.82rem;font-family:inherit}
+}
 .gamme-card-img{aspect-ratio:4/3;overflow:hidden;background:#eee}
 .gamme-card-img img{width:100%;height:100%;object-fit:cover}
 .gamme-card-body{padding:22px}
@@ -370,9 +401,87 @@ footer a:hover{color:var(--moutarde)}
     <div class="text-block" style="margin-bottom:8px;">
       <p>Chaque gamme correspond à un usage et un canal de revente. Le découpage suit la logique d'achat des revendeurs, pas la logique style des marques mode. Vous commandez ce qui se vend dans votre zone, pas ce qui fait joli en showroom.</p>
     </div>
+
+    <div class="filter-bar" id="filter-bar-desktop" role="region" aria-label="Filtres des gammes">
+      <div class="filter-group">
+        <label for="f-matiere">Matière</label>
+        <select id="f-matiere" data-filter="matiere">
+          <option value="">Toutes les matières</option>
+          <option value="acrylique">Acrylique</option>
+          <option value="laine">Laine</option>
+          <option value="coton">Coton</option>
+          <option value="polyester">Polyester / polaire</option>
+          <option value="melange">Mélange / mixte</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="f-moq">MOQ par modèle</label>
+        <select id="f-moq" data-filter="moq">
+          <option value="">Tous MOQ</option>
+          <option value="12">12 pcs</option>
+          <option value="24">24 pcs</option>
+          <option value="48">48 pcs</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="f-prix">Prix unitaire HT</label>
+        <select id="f-prix" data-filter="prix">
+          <option value="">Tous les prix</option>
+          <option value="0-5">Moins de 5 €</option>
+          <option value="5-10">5 à 10 €</option>
+          <option value="10-99">Plus de 10 €</option>
+        </select>
+      </div>
+      <div class="filter-actions">
+        <span class="filter-count" aria-live="polite"><b id="fc-shown">9</b> / <span id="fc-total">9</span> gammes</span>
+        <button type="button" class="filter-reset" id="filter-reset">Réinitialiser</button>
+      </div>
+    </div>
+
+    <details class="filter-mobile" id="filter-bar-mobile">
+      <summary>Filtrer les gammes</summary>
+      <div class="filter-bar-inner">
+        <div class="filter-group">
+          <label for="fm-matiere">Matière</label>
+          <select id="fm-matiere" data-filter="matiere">
+            <option value="">Toutes les matières</option>
+            <option value="acrylique">Acrylique</option>
+            <option value="laine">Laine</option>
+            <option value="coton">Coton</option>
+            <option value="polyester">Polyester / polaire</option>
+            <option value="melange">Mélange / mixte</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="fm-moq">MOQ par modèle</label>
+          <select id="fm-moq" data-filter="moq">
+            <option value="">Tous MOQ</option>
+            <option value="12">12 pcs</option>
+            <option value="24">24 pcs</option>
+            <option value="48">48 pcs</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="fm-prix">Prix unitaire HT</label>
+          <select id="fm-prix" data-filter="prix">
+            <option value="">Tous les prix</option>
+            <option value="0-5">Moins de 5 €</option>
+            <option value="5-10">5 à 10 €</option>
+            <option value="10-99">Plus de 10 €</option>
+          </select>
+        </div>
+        <div class="filter-actions">
+          <span class="filter-count"><b id="fc-shown-m">9</b> / <span id="fc-total-m">9</span> gammes</span>
+          <button type="button" class="filter-reset" id="filter-reset-m">Réinitialiser</button>
+        </div>
+      </div>
+    </details>
+
+    <div class="filter-empty" id="filter-empty">Aucune gamme ne correspond à votre sélection. <a id="filter-empty-reset">Réinitialiser les filtres</a></div>
+
     <div class="gammes-grid">
 
-      <article class="gamme-card">
+      <article class="gamme-card" data-matiere="laine" data-moq="12" data-prix-min="8" data-prix-max="18">
         <div class="gamme-card-img"><img src="/images/gamme-laine.webp" alt="Bonnets en laine et mérinos en gros — grossiste fournisseur B2B" width="600" height="450" loading="lazy"></div>
         <div class="gamme-card-body">
           <h3>Bonnets en laine et mérinos</h3>
@@ -381,7 +490,7 @@ footer a:hover{color:var(--moutarde)}
         </div>
       </article>
 
-      <article class="gamme-card">
+      <article class="gamme-card" data-matiere="acrylique" data-moq="12" data-prix-min="3" data-prix-max="7">
         <div class="gamme-card-img"><img src="/images/strip4.jpg" alt="Bonnets acrylique colorés en gros — grossiste premier prix" width="600" height="450" loading="lazy"></div>
         <div class="gamme-card-body">
           <h3>Bonnets acrylique premier prix</h3>
@@ -390,7 +499,7 @@ footer a:hover{color:var(--moutarde)}
         </div>
       </article>
 
-      <article class="gamme-card">
+      <article class="gamme-card" data-matiere="polyester" data-moq="12" data-prix-min="6" data-prix-max="14">
         <div class="gamme-card-img"><img src="/images/strip2.jpg" alt="Bonnets polaire doublés en gros — gamme grand froid grossiste" width="600" height="450" loading="lazy"></div>
         <div class="gamme-card-body">
           <h3>Bonnets polaire doublés</h3>
@@ -399,7 +508,7 @@ footer a:hover{color:var(--moutarde)}
         </div>
       </article>
 
-      <article class="gamme-card">
+      <article class="gamme-card" data-matiere="laine" data-moq="12" data-prix-min="7" data-prix-max="16">
         <div class="gamme-card-img"><img src="/images/strip1.jpg" alt="Bonnet à pompon en laine en gros — grossiste boutiques mode" width="600" height="450" loading="lazy"></div>
         <div class="gamme-card-body">
           <h3>Bonnets à pompon</h3>
@@ -408,7 +517,7 @@ footer a:hover{color:var(--moutarde)}
         </div>
       </article>
 
-      <article class="gamme-card">
+      <article class="gamme-card" data-matiere="melange" data-moq="12" data-prix-min="9" data-prix-max="17">
         <div class="gamme-card-img"><img src="/images/strip2.jpg" alt="Bonnets oversize slouch streetwear en gros" width="600" height="450" loading="lazy"></div>
         <div class="gamme-card-body">
           <h3>Bonnets oversize et slouch</h3>
@@ -417,7 +526,7 @@ footer a:hover{color:var(--moutarde)}
         </div>
       </article>
 
-      <article class="gamme-card">
+      <article class="gamme-card" data-matiere="melange" data-moq="12" data-prix-min="10" data-prix-max="19">
         <div class="gamme-card-img"><img src="/images/strip3.jpg" alt="Bonnets péruviens à oreillettes en gros — outdoor montagne" width="600" height="450" loading="lazy"></div>
         <div class="gamme-card-body">
           <h3>Bonnets péruviens à oreillettes</h3>
@@ -426,7 +535,7 @@ footer a:hover{color:var(--moutarde)}
         </div>
       </article>
 
-      <article class="gamme-card">
+      <article class="gamme-card" data-matiere="coton" data-moq="12" data-prix-min="6" data-prix-max="13">
         <div class="gamme-card-img"><img src="/images/hero.jpg" alt="Bonnets sport et marin en gros — clubs et boutiques nautiques" width="600" height="450" loading="lazy"></div>
         <div class="gamme-card-body">
           <h3>Bonnets sport et marin</h3>
@@ -435,7 +544,7 @@ footer a:hover{color:var(--moutarde)}
         </div>
       </article>
 
-      <article class="gamme-card">
+      <article class="gamme-card" data-matiere="acrylique" data-moq="24" data-prix-min="8" data-prix-max="15">
         <div class="gamme-card-img"><img src="/images/gamme-pro.webp" alt="Bonnets de chantier haute visibilité jaune fluo en gros — EPI BTP" width="600" height="450" loading="lazy"></div>
         <div class="gamme-card-body">
           <h3>Bonnets de chantier haute visibilité</h3>
@@ -444,7 +553,7 @@ footer a:hover{color:var(--moutarde)}
         </div>
       </article>
 
-      <article class="gamme-card">
+      <article class="gamme-card" data-matiere="melange" data-moq="48" data-prix-min="2" data-prix-max="5">
         <div class="gamme-card-img"><img src="/images/gamme-broderie.webp" alt="Bonnets brodés personnalisés logo en gros — atelier broderie intégré" width="600" height="450" loading="lazy"></div>
         <div class="gamme-card-body">
           <h3>Bonnets brodés personnalisés</h3>
@@ -753,6 +862,103 @@ document.querySelectorAll('.faq-q').forEach(btn=>{
       if (errorEl) errorEl.style.display = 'block';
     }
   });
+})();
+</script>
+
+<script>
+/* Filtres transverses gammes */
+(function(){
+  var grid = document.querySelector('.gammes-grid');
+  if(!grid) return;
+  var cards = Array.prototype.slice.call(grid.querySelectorAll('.gamme-card'));
+  if(!cards.length) return;
+  var emptyMsg = document.getElementById('filter-empty');
+  var emptyReset = document.getElementById('filter-empty-reset');
+  var resetBtn = document.getElementById('filter-reset');
+  var resetBtnM = document.getElementById('filter-reset-m');
+  var shownEls = [document.getElementById('fc-shown'), document.getElementById('fc-shown-m')];
+  var totalEls = [document.getElementById('fc-total'), document.getElementById('fc-total-m')];
+  var total = cards.length;
+  totalEls.forEach(function(el){ if(el) el.textContent = total; });
+
+  // sync desktop and mobile selects
+  var allSelects = document.querySelectorAll('.filter-bar select, .filter-mobile select');
+  var state = { matiere:'', moq:'', prix:'' };
+
+  function priceOverlap(card, range){
+    if(!range) return true;
+    var parts = range.split('-');
+    var rMin = parseFloat(parts[0]);
+    var rMax = parseFloat(parts[1]);
+    var cMin = parseFloat(card.getAttribute('data-prix-min'));
+    var cMax = parseFloat(card.getAttribute('data-prix-max'));
+    if(isNaN(cMin) || isNaN(cMax)) return false;
+    return cMin <= rMax && cMax >= rMin;
+  }
+
+  function cardMatches(card, st){
+    if(st.matiere && card.getAttribute('data-matiere') !== st.matiere) return false;
+    if(st.moq && card.getAttribute('data-moq') !== st.moq) return false;
+    if(st.prix && !priceOverlap(card, st.prix)) return false;
+    return true;
+  }
+
+  function apply(){
+    var shown = 0;
+    cards.forEach(function(c){
+      if(cardMatches(c, state)){ c.classList.remove('is-hidden'); shown++; }
+      else { c.classList.add('is-hidden'); }
+    });
+    shownEls.forEach(function(el){ if(el) el.textContent = shown; });
+    emptyMsg.style.display = shown === 0 ? 'block' : 'none';
+    updateOptionsAvailability();
+  }
+
+  function updateOptionsAvailability(){
+    // For each filter, simulate "what if I changed only this one" -> count cards
+    ['matiere','moq','prix'].forEach(function(fname){
+      var simState = { matiere:state.matiere, moq:state.moq, prix:state.prix };
+      var selects = document.querySelectorAll('select[data-filter="'+fname+'"]');
+      selects.forEach(function(sel){
+        Array.prototype.slice.call(sel.options).forEach(function(opt){
+          if(opt.value === ''){
+            opt.disabled = false;
+            opt.textContent = opt.textContent.replace(/\s*\(\d+\)$/,'');
+            return;
+          }
+          simState[fname] = opt.value;
+          var count = cards.filter(function(c){ return cardMatches(c, simState); }).length;
+          // strip existing count
+          var base = opt.textContent.replace(/\s*\(\d+\)$/,'');
+          opt.textContent = base + ' (' + count + ')';
+          opt.disabled = count === 0;
+        });
+        simState[fname] = state[fname];
+      });
+    });
+  }
+
+  function reset(){
+    state = { matiere:'', moq:'', prix:'' };
+    allSelects.forEach(function(s){ s.value = ''; });
+    apply();
+  }
+
+  allSelects.forEach(function(sel){
+    sel.addEventListener('change', function(){
+      var f = sel.getAttribute('data-filter');
+      state[f] = sel.value;
+      // sync between desktop/mobile
+      document.querySelectorAll('select[data-filter="'+f+'"]').forEach(function(s){ s.value = sel.value; });
+      apply();
+    });
+  });
+
+  if(resetBtn) resetBtn.addEventListener('click', reset);
+  if(resetBtnM) resetBtnM.addEventListener('click', reset);
+  if(emptyReset) emptyReset.addEventListener('click', function(e){ e.preventDefault(); reset(); });
+
+  apply();
 })();
 </script>
 </body>
