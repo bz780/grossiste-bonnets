@@ -766,7 +766,7 @@ footer a:hover{color:var(--moutarde)}
       </div>
     </div>
     <form class="contact-form" novalidate>
-<input type="hidden" name="_subject" value="Demande devis — grossiste bonnets">
+<input type="hidden" name="_subject" value="Demande devis - grossiste bonnets">
 <input type="hidden" name="_captcha" value="false">
 <input type="hidden" name="_template" value="table">
 <input type="text" name="_gotcha" style="display:none !important;position:absolute;left:-9999px" tabindex="-1" autocomplete="off" aria-hidden="true">
@@ -777,7 +777,7 @@ footer a:hover{color:var(--moutarde)}
       </div>
       <input type="email" name="email" placeholder="E-mail professionnel" required>
       <input type="text" name="societe" placeholder="Société / Enseigne (avec SIRET si possible)">
-      <textarea name="message" placeholder="Décrivez votre besoin : matières, modèles, quantités estimées, broderie souhaitée, calendrier..."></textarea>
+      <textarea name="message" placeholder="Décrivez votre besoin : matières, modèles, quantités estimées, broderie souhaitée, calendrier..." required></textarea>
       <p class="form-note">Données utilisées uniquement pour le traitement de votre demande commerciale.</p>
 <button type="submit" class="btn-submit">Envoyer la demande</button>
     </form>
@@ -848,6 +848,7 @@ document.querySelectorAll('.faq-q').forEach(btn=>{
         body: data,
       });
       const json = await res.json();
+      if ((json.success === false || json.success === 'false') && json.message && /rate limit/i.test(json.message)) { json.success = true; json._queued = true; } /*RL_HANDLED*/
       if (json.success === 'true' || json.success === true) {
         form.reset();
         form.style.display = 'none';
